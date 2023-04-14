@@ -1,0 +1,176 @@
+using System;
+using System.Collections.Generic;
+
+namespace ISE_A2
+{
+    internal class Bank
+    {
+        private Dictionary<string, Dictionary<string, string>> users;
+        private string logged_in_user;
+        private int login_attempts;
+        private int max_login_attempts;
+        private double balance;
+
+        public Bank()
+        {
+            users = new Dictionary<string, Dictionary<string, string>>();
+            logged_in_user = null;
+            login_attempts = 0;
+            max_login_attempts = 3;
+            balance = 0;
+            Dictionary<string, string> userData = new Dictionary<string, string>()
+            {
+                { "Email", "joe.doe@example.com" },
+                { "Age", "30" },
+                { "Phone", "+1-1234567890" },
+                { "Password", "Password123" }
+            };
+            users["Joe.Doe"] = userData;
+        }
+
+        public void Login(string username, string password)
+        {
+            if (login_attempts >= max_login_attempts)
+            {
+                Console.WriteLine("Maximum login attempts reached. Please try again later.");
+                return;
+            }
+
+            if (users.ContainsKey(username) && users[username]["Password"] == password)
+            {
+                Console.WriteLine("Login successful!");
+                logged_in_user = username;
+                login_attempts = 0; 
+                ShowOptions();
+            }
+            else
+            {
+                Console.WriteLine("Invalid username or password. Please try again.");
+                login_attempts++;
+            }
+        }
+
+        public void Signup(string username, string email, int age, string phone, string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || age <= 0 ||
+                string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(password))
+            {
+                Console.WriteLine("Please enter all details correctly.");
+                return;
+            }
+
+            if (users.ContainsKey(username))
+            {
+                Console.WriteLine("Username already exists. Please choose a different username.");
+            }
+            else
+            {
+                Dictionary<string, string> userData = new Dictionary<string, string>()
+                {
+                    { "Email", email },
+                    { "Age", age.ToString() },
+                    { "Phone", phone },
+                    { "Password", password }
+                };
+                users[username] = userData;
+                Console.WriteLine("Signup successful! You can now login with your credentials.");
+            }
+        }
+
+        public void ShowOptions()
+        {
+            while (true)
+            {
+                Console.WriteLine("Options: ");
+                Console.WriteLine("1. View Balance");
+                Console.WriteLine("2. Withdraw");
+                Console.WriteLine("3. Deposit");
+                Console.WriteLine("4. Transfer");
+                Console.WriteLine("5. Quit");
+                Console.WriteLine("Enter your choice: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("View Balance selected.");
+                        break;
+                    case "2":
+                        Console.WriteLine("Withdraw selected.");
+                        break;
+                    case "3":
+                        Console.WriteLine("Deposit selected.");
+                        break;
+                    case "4":
+                        Console.WriteLine("Transfer selected.");
+                        break;
+                    case "5":
+                        Console.WriteLine("Quitting...");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+        public void MainScreen()
+        {
+            if (logged_in_user == null)
+            {
+                Console.WriteLine("You are not logged in.");
+            }
+            else
+            {
+                Console.WriteLine("Welcome to the main screen, " + logged_in_user + "!");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Bank bank = new Bank();
+
+            while (true)
+            {
+                Console.WriteLine("Choose an option: ");
+                Console.WriteLine("1. Login");
+                Console.WriteLine("2. Signup");
+                Console.WriteLine("3. Exit");
+                Console.WriteLine("Enter your choice: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("Enter username:");
+                        string username = Console.ReadLine();
+                        Console.WriteLine("Enter password:");
+                        string password = Console.ReadLine();
+                        bank.Login(username, password);
+                        break;
+                    case "2":
+                        Console.WriteLine("Enter username:");
+                        username = Console.ReadLine();
+                        Console.WriteLine("Enter email:");
+                        string email = Console.ReadLine();
+                        Console.WriteLine("Enter age:");
+                        int age = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Enter phone:");
+                        string phone = Console.ReadLine();
+                        Console.WriteLine("Enter password:");
+                        password = Console.ReadLine();
+                        bank.Signup(username, email, age, phone, password);
+                        break;
+                    case "3":
+                        Console.WriteLine("Exiting...");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+    }
+}
